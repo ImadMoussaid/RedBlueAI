@@ -11,6 +11,13 @@ export type RunStatus =
 
 export type FindingSeverity = 'Critical' | 'High' | 'Medium' | 'Low';
 
+export interface FindingEvidence {
+  id: string;
+  label: string;
+  detail: string;
+  source: 'browser' | 'api' | 'worker' | 'report';
+}
+
 export interface Finding {
   id: string;
   title: string;
@@ -23,6 +30,11 @@ export interface Finding {
   category: string;
   owasp: string;
   cwe: string;
+  confidence: 'High' | 'Medium' | 'Low';
+  remediationOwner: string;
+  remediationWindow: string;
+  detectionStatus: 'missed' | 'triggered' | 'review';
+  evidenceItems: FindingEvidence[];
 }
 
 export type RunPhaseStatus = 'complete' | 'current' | 'pending';
@@ -171,7 +183,25 @@ export const findings: Finding[] = [
     status: 'open',
     category: 'Session Management',
     owasp: 'A07:2021',
-    cwe: 'CWE-614'
+    cwe: 'CWE-614',
+    confidence: 'High',
+    remediationOwner: 'Platform engineering',
+    remediationWindow: 'Immediate',
+    detectionStatus: 'missed',
+    evidenceItems: [
+      {
+        id: 'e-001',
+        label: 'Cookie capture',
+        detail: 'Browser evidence showed the session cookie issued without the Secure attribute.',
+        source: 'browser'
+      },
+      {
+        id: 'e-002',
+        label: 'Worker replay',
+        detail: 'Worker replay confirmed the session behavior across two authenticated requests.',
+        source: 'worker'
+      }
+    ]
   },
   {
     id: 'f-002',
@@ -184,7 +214,19 @@ export const findings: Finding[] = [
     status: 'open',
     category: 'Abuse Prevention',
     owasp: 'A01:2021',
-    cwe: 'CWE-770'
+    cwe: 'CWE-770',
+    confidence: 'Medium',
+    remediationOwner: 'Application backend team',
+    remediationWindow: 'Next sprint',
+    detectionStatus: 'triggered',
+    evidenceItems: [
+      {
+        id: 'e-003',
+        label: 'API replay sample',
+        detail: 'Burst of reset requests succeeded without backoff or route throttling.',
+        source: 'api'
+      }
+    ]
   },
   {
     id: 'f-003',
@@ -197,7 +239,19 @@ export const findings: Finding[] = [
     status: 'accepted',
     category: 'Information Disclosure',
     owasp: 'A01:2021',
-    cwe: 'CWE-200'
+    cwe: 'CWE-200',
+    confidence: 'Medium',
+    remediationOwner: 'API platform team',
+    remediationWindow: 'Backlog',
+    detectionStatus: 'review',
+    evidenceItems: [
+      {
+        id: 'e-004',
+        label: 'Response body review',
+        detail: 'Internal flags and identifiers were present in a user-facing response.',
+        source: 'report'
+      }
+    ]
   },
   {
     id: 'f-004',
@@ -210,7 +264,19 @@ export const findings: Finding[] = [
     status: 'open',
     category: 'Authentication',
     owasp: 'A07:2021',
-    cwe: 'CWE-204'
+    cwe: 'CWE-204',
+    confidence: 'Low',
+    remediationOwner: 'Identity team',
+    remediationWindow: 'Backlog',
+    detectionStatus: 'review',
+    evidenceItems: [
+      {
+        id: 'e-005',
+        label: 'Response timing comparison',
+        detail: 'Latency differed across valid and invalid identities during repeated login attempts.',
+        source: 'worker'
+      }
+    ]
   }
 ];
 
@@ -223,6 +289,7 @@ export const runDetails: Record<
     detectionsMissed: number;
     topFixes: string[];
     findings: Finding[];
+    remediationPlan: { owner: string; action: string; window: string }[];
   }
 > = {
   'run-acme-001': {
@@ -235,7 +302,19 @@ export const runDetails: Record<
       'Add rate limits to auth-related endpoints.',
       'Reduce metadata in admin API responses.'
     ],
-    findings: findings.slice(0, 3)
+    findings: findings.slice(0, 3),
+    remediationPlan: [
+      {
+        owner: 'Platform engineering',
+        action: 'Enforce secure cookie defaults across every authenticated route.',
+        window: 'Immediate'
+      },
+      {
+        owner: 'Application backend team',
+        action: 'Add throttling and detection coverage to password-reset endpoints.',
+        window: 'Next sprint'
+      }
+    ]
   },
   'run-northwind-014': {
     summary: 'Currently running from worker-us-02 and moving through red team checks.',
@@ -247,7 +326,19 @@ export const runDetails: Record<
       'Add alerting coverage for reset abuse.',
       'Improve API response filtering.'
     ],
-    findings: findings.slice(0, 4)
+    findings: findings.slice(0, 4),
+    remediationPlan: [
+      {
+        owner: 'Platform engineering',
+        action: 'Confirm secure cookie defaults before production promotion.',
+        window: 'Immediate'
+      },
+      {
+        owner: 'API platform team',
+        action: 'Review the serialized response schema for internal-only fields.',
+        window: 'Backlog'
+      }
+    ]
   },
   'run-fabrikam-008': {
     summary: 'Blue team review complete. Purple summary and PDF report are being assembled.',
@@ -259,7 +350,19 @@ export const runDetails: Record<
       'Document the reproduction steps for session handling.',
       'Share a prioritized remediation plan with the operator.'
     ],
-    findings
+    findings,
+    remediationPlan: [
+      {
+        owner: 'Identity team',
+        action: 'Normalize login responses and timing behavior.',
+        window: 'Backlog'
+      },
+      {
+        owner: 'Application backend team',
+        action: 'Harden abuse-prevention coverage around recovery flows.',
+        window: 'Next sprint'
+      }
+    ]
   }
 };
 

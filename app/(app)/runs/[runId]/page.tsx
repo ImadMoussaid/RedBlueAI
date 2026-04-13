@@ -8,8 +8,6 @@ export default function RunDetailPage({ params }: { params: { runId: string } })
   const detail = exerciseRunDetails[run.id] ?? exerciseRunDetails['run-acme-001'];
   const findingDetail = findingRunDetails[run.id] ?? findingRunDetails['run-acme-001'];
   const runFindings = findingDetail?.findings ?? findings;
-  const openFindings = runFindings.filter((finding) => finding.status === 'open').length;
-  const closedFindings = runFindings.filter((finding) => finding.status !== 'open').length;
 
   return (
     <div className="grid" style={{ gap: 24 }}>
@@ -17,7 +15,7 @@ export default function RunDetailPage({ params }: { params: { runId: string } })
         <span className="badge">Run detail</span>
         <h1>{run.target}</h1>
         <p>
-          {detail.summary} This view keeps operator approval history, worker assignment, findings, and report status in one place.
+          {detail.summary} This view keeps operator approval history, worker assignment, findings, remediation ownership, and report status in one place.
         </p>
       </header>
 
@@ -49,14 +47,6 @@ export default function RunDetailPage({ params }: { params: { runId: string } })
               <strong>Detections missed</strong>
               <h3 style={{ marginTop: 8, fontSize: '2rem' }}>{findingDetail.detectionsMissed}</h3>
             </div>
-            <div className="card" style={{ padding: 16, background: 'var(--panel-alt)', boxShadow: 'none' }}>
-              <strong>Open findings</strong>
-              <h3 style={{ marginTop: 8, fontSize: '2rem' }}>{openFindings}</h3>
-            </div>
-            <div className="card" style={{ padding: 16, background: 'var(--panel-alt)', boxShadow: 'none' }}>
-              <strong>Closed or accepted</strong>
-              <h3 style={{ marginTop: 8, fontSize: '2rem' }}>{closedFindings}</h3>
-            </div>
           </div>
           <div className="card" style={{ padding: 16, background: 'var(--panel-alt)', boxShadow: 'none', marginTop: 12 }}>
             <strong>Top fixes</strong>
@@ -65,11 +55,6 @@ export default function RunDetailPage({ params }: { params: { runId: string } })
                 <li key={fix}>{fix}</li>
               ))}
             </ul>
-          </div>
-          <div className="card" style={{ padding: 16, background: 'var(--panel-alt)', boxShadow: 'none', marginTop: 12 }}>
-            <strong>Evidence pulse</strong>
-            <p style={{ marginTop: 10 }}>{runFindings[0]?.evidence}</p>
-            <p style={{ marginTop: 8 }}>{runFindings[0]?.impact}</p>
           </div>
         </article>
       </section>
@@ -106,22 +91,34 @@ export default function RunDetailPage({ params }: { params: { runId: string } })
         ) : null}
       </section>
 
-      <section className="card" style={{ padding: 24 }}>
-        <div className="kicker">Operator next steps</div>
-        <h2 style={{ marginTop: 8 }}>How the request moves forward</h2>
-        <ul className="list" style={{ marginTop: 12 }}>
-          {detail.nextSteps.map((step) => (
-            <li key={step}>{step}</li>
-          ))}
-        </ul>
+      <section className="grid two">
+        <article className="card" style={{ padding: 24 }}>
+          <div className="kicker">Operator next steps</div>
+          <h2 style={{ marginTop: 8 }}>How the request moves forward</h2>
+          <ul className="list" style={{ marginTop: 12 }}>
+            {detail.nextSteps.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ul>
+        </article>
+        <article className="card" style={{ padding: 24 }}>
+          <div className="kicker">Remediation plan</div>
+          <h2 style={{ marginTop: 8 }}>Ownership and expected window</h2>
+          <div className="grid" style={{ gap: 12, marginTop: 16 }}>
+            {findingDetail.remediationPlan.map((item) => (
+              <div key={item.owner + item.action} className="card" style={{ padding: 16, background: 'var(--panel-alt)', boxShadow: 'none' }}>
+                <strong>{item.owner}</strong>
+                <p style={{ marginTop: 8 }}>{item.action}</p>
+                <p><strong>Window:</strong> {item.window}</p>
+              </div>
+            ))}
+          </div>
+        </article>
       </section>
 
       <section className="card" style={{ padding: 24 }}>
         <div className="kicker">Finding detail</div>
         <h2 style={{ marginTop: 8 }}>Operator review summary</h2>
-        <p style={{ marginTop: 8, maxWidth: 780 }}>
-          Findings are shown as individual evidence cards so the operator can move from detection to remediation without losing the context behind the issue.
-        </p>
         <div className="grid two" style={{ marginTop: 18 }}>
           {runFindings.map((finding) => (
             <FindingCard key={finding.id} finding={finding} />

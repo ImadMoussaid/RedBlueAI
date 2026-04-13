@@ -7,6 +7,22 @@ export type ReportArtifact = {
   path: string;
   sizeLabel: string;
   status: 'ready' | 'pending' | 'blocked';
+  summary: string;
+};
+
+export type ReportEvidence = {
+  id: string;
+  label: string;
+  source: 'browser' | 'api' | 'worker' | 'report';
+  detail: string;
+};
+
+export type ReportFix = {
+  id: string;
+  title: string;
+  owner: string;
+  priority: 'Immediate' | 'Next sprint' | 'Backlog';
+  summary: string;
 };
 
 export type ReportFinding = {
@@ -19,6 +35,9 @@ export type ReportFinding = {
   owasp: string;
   cwe: string;
   detectionStatus: 'missed' | 'triggered' | 'review';
+  evidence: ReportEvidence[];
+  remediationOwner: string;
+  remediationWindow: string;
 };
 
 export type ReportRun = {
@@ -33,4 +52,6 @@ export type ReportRun = {
   missedDetections: number;
   findings: ReportFinding[];
   artifacts: ReportArtifact[];
+  actionableFixes: ReportFix[];
+  executiveSummary: string;
 };
