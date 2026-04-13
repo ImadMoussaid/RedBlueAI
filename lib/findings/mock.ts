@@ -1,0 +1,279 @@
+export type RunStatus =
+  | 'pending_manual_start'
+  | 'approved'
+  | 'queued'
+  | 'assigned'
+  | 'running'
+  | 'reporting'
+  | 'completed'
+  | 'failed'
+  | 'blocked';
+
+export type FindingSeverity = 'Critical' | 'High' | 'Medium' | 'Low';
+
+export interface Finding {
+  id: string;
+  title: string;
+  severity: FindingSeverity;
+  summary: string;
+  evidence: string;
+  impact: string;
+  action: string;
+  status: 'open' | 'fixed' | 'accepted';
+  category: string;
+  owasp: string;
+  cwe: string;
+}
+
+export type RunPhaseStatus = 'complete' | 'current' | 'pending';
+
+export interface RunPhase {
+  name: string;
+  status: RunPhaseStatus;
+  note: string;
+}
+
+export interface WorkerHost {
+  name: string;
+  status: 'healthy' | 'degraded' | 'busy';
+  load: string;
+  lastHeartbeat: string;
+}
+
+export interface RunSummary {
+  id: string;
+  target: string;
+  type: string;
+  status: RunStatus;
+  consent: 'Captured' | 'Missing';
+  guardrails: string;
+  requestedAt: string;
+  worker: string;
+  actionableFixes: number;
+  detectionsMissed: number;
+}
+
+export const dashboardStats = [
+  {
+    title: 'Pending approvals',
+    value: '03',
+    body: 'Runs waiting for founder review before queueing.'
+  },
+  {
+    title: 'Active workers',
+    value: '02',
+    body: 'Hosts ready to claim approved jobs.'
+  },
+  {
+    title: 'Actionable fixes',
+    value: '12',
+    body: 'Prioritized remediation items from recent exercises.'
+  }
+];
+
+export const workerHosts: WorkerHost[] = [
+  {
+    name: 'worker-eu-01',
+    status: 'healthy',
+    load: '42%',
+    lastHeartbeat: '2 min ago'
+  },
+  {
+    name: 'worker-us-02',
+    status: 'busy',
+    load: '81%',
+    lastHeartbeat: '30 sec ago'
+  },
+  {
+    name: 'worker-lab-03',
+    status: 'degraded',
+    load: '65%',
+    lastHeartbeat: '11 min ago'
+  }
+];
+
+export const runs: RunSummary[] = [
+  {
+    id: 'run-acme-001',
+    target: 'Acme staging app',
+    type: 'Authenticated web exercise',
+    status: 'pending_manual_start',
+    consent: 'Captured',
+    guardrails: 'Read-only, 30 req/min, weekday hours',
+    requestedAt: 'Today, 09:40',
+    worker: 'Not assigned',
+    actionableFixes: 4,
+    detectionsMissed: 2
+  },
+  {
+    id: 'run-northwind-014',
+    target: 'Northwind API',
+    type: 'API exercise',
+    status: 'running',
+    consent: 'Captured',
+    guardrails: 'OpenAPI uploaded, no destructive checks',
+    requestedAt: 'Today, 08:15',
+    worker: 'worker-us-02',
+    actionableFixes: 7,
+    detectionsMissed: 1
+  },
+  {
+    id: 'run-fabrikam-008',
+    target: 'Fabrikam checkout',
+    type: 'Quick web exercise',
+    status: 'reporting',
+    consent: 'Captured',
+    guardrails: 'Allowed domains only, test accounts only',
+    requestedAt: 'Yesterday, 16:05',
+    worker: 'worker-eu-01',
+    actionableFixes: 5,
+    detectionsMissed: 3
+  }
+];
+
+export const runPhases: RunPhase[] = [
+  {
+    name: 'Rules of engagement check',
+    status: 'complete',
+    note: 'Consent, scope, and guardrails are frozen.'
+  },
+  {
+    name: 'Recon and app mapping',
+    status: 'complete',
+    note: 'Entry points, forms, and key flows discovered.'
+  },
+  {
+    name: 'Red team checks',
+    status: 'current',
+    note: 'Session handling and input validation under review.'
+  },
+  {
+    name: 'Blue team validation',
+    status: 'pending',
+    note: 'Alerting and event evidence will be reviewed next.'
+  },
+  {
+    name: 'Purple summary',
+    status: 'pending',
+    note: 'Actionable fixes and executive summary queued.'
+  }
+];
+
+export const findings: Finding[] = [
+  {
+    id: 'f-001',
+    title: 'Session cookie missing secure flag',
+    severity: 'High',
+    summary: 'Session cookies can leak over insecure transport if the runtime is misconfigured.',
+    evidence: 'Cookie observed without Secure during staging test flow.',
+    impact: 'Session leakage can lead to account takeover on exposed environments.',
+    action: 'Set the Secure attribute and enforce HTTPS-only cookie handling everywhere.',
+    status: 'open',
+    category: 'Session Management',
+    owasp: 'A07:2021',
+    cwe: 'CWE-614'
+  },
+  {
+    id: 'f-002',
+    title: 'Password reset route lacks rate limiting',
+    severity: 'Medium',
+    summary: 'The reset endpoint can be hit repeatedly without obvious throttling.',
+    evidence: 'Multiple reset submissions accepted in rapid succession.',
+    impact: 'Attackers can brute force or abuse reset requests.',
+    action: 'Apply route-based rate limiting and add anomaly detection on repeated attempts.',
+    status: 'open',
+    category: 'Abuse Prevention',
+    owasp: 'A01:2021',
+    cwe: 'CWE-770'
+  },
+  {
+    id: 'f-003',
+    title: 'Admin API returns excess metadata',
+    severity: 'Medium',
+    summary: 'The API exposes more internal identifiers than the UI needs.',
+    evidence: 'Response payload includes feature flags and internal IDs.',
+    impact: 'Overexposed metadata increases reconnaissance value for attackers.',
+    action: 'Trim response payloads and validate role access before serialization.',
+    status: 'accepted',
+    category: 'Information Disclosure',
+    owasp: 'A01:2021',
+    cwe: 'CWE-200'
+  },
+  {
+    id: 'f-004',
+    title: 'Login form reveals invalid user timing signal',
+    severity: 'Low',
+    summary: 'Response timing differs slightly between invalid and valid usernames.',
+    evidence: 'Repeated comparison across two test accounts showed a measurable gap.',
+    impact: 'User enumeration becomes easier during targeted attacks.',
+    action: 'Normalize timing and return consistent auth responses.',
+    status: 'open',
+    category: 'Authentication',
+    owasp: 'A07:2021',
+    cwe: 'CWE-204'
+  }
+];
+
+export const runDetails: Record<
+  string,
+  {
+    summary: string;
+    reportStatus: string;
+    detectionsTriggered: number;
+    detectionsMissed: number;
+    topFixes: string[];
+    findings: Finding[];
+  }
+> = {
+  'run-acme-001': {
+    summary: 'Queued for manual start. Consent captured and guardrails frozen.',
+    reportStatus: 'Waiting for approval',
+    detectionsTriggered: 1,
+    detectionsMissed: 2,
+    topFixes: [
+      'Enable secure cookies and HTTPS-only transport.',
+      'Add rate limits to auth-related endpoints.',
+      'Reduce metadata in admin API responses.'
+    ],
+    findings: findings.slice(0, 3)
+  },
+  'run-northwind-014': {
+    summary: 'Currently running from worker-us-02 and moving through red team checks.',
+    reportStatus: 'In progress',
+    detectionsTriggered: 2,
+    detectionsMissed: 1,
+    topFixes: [
+      'Harden session management defaults.',
+      'Add alerting coverage for reset abuse.',
+      'Improve API response filtering.'
+    ],
+    findings: findings.slice(0, 4)
+  },
+  'run-fabrikam-008': {
+    summary: 'Blue team review complete. Purple summary and PDF report are being assembled.',
+    reportStatus: 'Reporting',
+    detectionsTriggered: 3,
+    detectionsMissed: 3,
+    topFixes: [
+      'Review detections missed during checkout flow.',
+      'Document the reproduction steps for session handling.',
+      'Share a prioritized remediation plan with the operator.'
+    ],
+    findings
+  }
+};
+
+export const actionableSummary = [
+  {
+    title: 'Prioritized fixes',
+    text: 'Every finding should end in one concrete change the app owner can make next.'
+  },
+  {
+    title: 'Detection gaps',
+    text: 'Show which issues were triggered, missed, or only partially observed.'
+  },
+  {
+    title: 'Operator clarity',
+    text: 'Keep queue state, worker assignment, and report status visible in one place.'
+  }
+];

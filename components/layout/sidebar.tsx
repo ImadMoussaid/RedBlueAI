@@ -1,8 +1,12 @@
 const links = [
+  { href: '/workspace', label: 'Workspace' },
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/apps/new', label: 'Add app' },
   { href: '/consent', label: 'Consent' },
-  { href: '/runs', label: 'Runs' }
+  { href: '/launch', label: 'Launch' },
+  { href: '/runs', label: 'Runs' },
+  { href: '/workers', label: 'Workers' },
+  { href: '/billing', label: 'Billing' }
 ];
 
 export function Sidebar() {
