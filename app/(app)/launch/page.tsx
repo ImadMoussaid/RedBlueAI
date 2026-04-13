@@ -1,14 +1,15 @@
-import { consentRecord, exerciseRequests, targetApplications } from '@/lib/data/control-plane';
+import { RequestReviewPanel } from '@/components/exercises/request-review-panel';
+import { consentRecord, targetApplications } from '@/lib/data/control-plane';
+import { approvalPath, blockedPath, exerciseRequests } from '@/lib/exercises/mock';
 
 export default function LaunchPage() {
   return (
-    <div className="grid">
+    <div className="grid" style={{ gap: 24 }}>
       <header className="page-header">
         <span className="badge">Exercise request</span>
-        <h1>Create a request that freezes scope, consent, and guardrails.</h1>
+        <h1>Create a request that freezes scope, consent, and guardrails before review.</h1>
         <p>
-          This route scaffolds issue #6 by showing the request payload an operator should review before the
-          exercise enters the queue.
+          This route shows the exact request payload an operator reviews before approving a run or blocking it for changes.
         </p>
       </header>
 
@@ -60,21 +61,7 @@ export default function LaunchPage() {
         </div>
       </section>
 
-      <section className="card" style={{ padding: 24 }}>
-        <h2>Recent request payloads</h2>
-        <div className="timeline" style={{ marginTop: 18 }}>
-          {exerciseRequests.map((request) => (
-            <div key={request.id} className="timeline-item">
-              <span />
-              <div>
-                <strong>{request.id} · {request.target}</strong>
-                <p>{request.type} · {request.status}</p>
-                <p>{request.summary}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <RequestReviewPanel requests={exerciseRequests} approvalPath={approvalPath} blockedPath={blockedPath} />
     </div>
   );
 }

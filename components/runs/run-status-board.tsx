@@ -1,25 +1,46 @@
 import { StatusPill } from '@/components/findings/status-pill';
-import { runPhases, workerHosts } from '@/lib/findings/mock';
+import { workerHosts } from '@/lib/findings/mock';
+import { approvalPath, blockedPath } from '@/lib/exercises/mock';
 
 export function RunStatusBoard() {
   return (
     <section className="grid two">
       <article className="card" style={{ padding: 24 }}>
         <div className="kicker">Run lifecycle</div>
-        <h2 style={{ marginTop: 8 }}>Operator-friendly state view</h2>
+        <h2 style={{ marginTop: 8 }}>Operator approval gates and state changes</h2>
+        <p style={{ marginTop: 10 }}>
+          Requests must be approved before queueing, and blocked requests stay visible with a reason until the operator fixes scope or authorization.
+        </p>
         <div className="timeline" style={{ marginTop: 18 }}>
-          {runPhases.map((phase) => (
-            <div key={phase.name} className="timeline-item">
+          {approvalPath.map((stage) => (
+            <div key={stage.title} className="timeline-item">
               <span />
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-                  <strong>{phase.name}</strong>
-                  <StatusPill tone={phase.status} label={phase.status} />
+                  <strong>{stage.title}</strong>
+                  <StatusPill tone={stage.tone} label={stage.tone.replaceAll('_', ' ')} />
                 </div>
-                <p>{phase.note}</p>
+                <p>{stage.note}</p>
               </div>
             </div>
           ))}
+        </div>
+        <div className="card" style={{ marginTop: 16, padding: 16, background: 'var(--panel-alt)', boxShadow: 'none' }}>
+          <div className="kicker">Blocked transition</div>
+          <div className="timeline" style={{ marginTop: 12 }}>
+            {blockedPath.map((stage) => (
+              <div key={stage.title} className="timeline-item">
+                <span />
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+                    <strong>{stage.title}</strong>
+                    <StatusPill tone={stage.tone} label={stage.tone.replaceAll('_', ' ')} />
+                  </div>
+                  <p>{stage.note}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </article>
       <article className="card" style={{ padding: 24 }}>
