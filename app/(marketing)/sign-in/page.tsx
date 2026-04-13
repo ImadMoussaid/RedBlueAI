@@ -1,6 +1,9 @@
+import { AuthJourney } from '@/components/auth/auth-journey';
+import { authActions, signInHighlights, signInJourney } from '@/lib/auth/mock';
+
 export default function SignInPage() {
   return (
-    <main className="shell">
+    <main className="shell grid" style={{ gap: 24 }}>
       <section className="card" style={{ padding: 28, width: 'min(560px, 100%)', margin: '0 auto' }}>
         <header className="page-header" style={{ marginBottom: 18 }}>
           <span className="badge">Authentication</span>
@@ -19,9 +22,17 @@ export default function SignInPage() {
         </div>
         <div className="button-row" style={{ marginTop: 18 }}>
           <a href="/workspace" className="button primary">Continue to workspace</a>
-          <a href="/" className="button secondary">Back to landing page</a>
+          <a href="/register" className="button secondary">Create workspace</a>
         </div>
       </section>
+
+      <AuthJourney
+        badge="Operator access"
+        title="How the auth foundation will flow"
+        highlights={signInHighlights}
+        journey={signInJourney}
+        actions={authActions}
+      />
     </main>
   );
 }

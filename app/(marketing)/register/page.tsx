@@ -1,6 +1,9 @@
+import { AuthJourney } from '@/components/auth/auth-journey';
+import { authActions, registerHighlights, registerJourney } from '@/lib/auth/mock';
+
 export default function RegisterPage() {
   return (
-    <main className="shell">
+    <main className="shell grid" style={{ gap: 24 }}>
       <section className="card" style={{ padding: 28, width: 'min(720px, 100%)', margin: '0 auto' }}>
         <header className="page-header" style={{ marginBottom: 18 }}>
           <span className="badge">Workspace setup</span>
@@ -30,6 +33,14 @@ export default function RegisterPage() {
           <a href="/sign-in" className="button secondary">Already have an account</a>
         </div>
       </section>
+
+      <AuthJourney
+        badge="Workspace creation"
+        title="Pilot account and workspace setup"
+        highlights={registerHighlights}
+        journey={registerJourney}
+        actions={authActions}
+      />
     </main>
   );
 }
