@@ -9,7 +9,7 @@ export function Sidebar() {
   return (
     <aside className="sidebar card">
       <div style={{ display: 'grid', gap: 6, marginBottom: 18 }}>
-        <span className="kicker">Purple Rain</span>
+        <span className="kicker">RedBlueAI</span>
         <strong style={{ fontSize: '1.15rem' }}>RedBlueAI Control</strong>
       </div>
       <nav>

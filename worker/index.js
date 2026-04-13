@@ -4,6 +4,6 @@ const config = {
   ollamaBaseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434'
 };
 
-console.log('[purple-rain-worker] starting placeholder worker');
-console.log('[purple-rain-worker] configuration', config);
-console.log('[purple-rain-worker] next step: connect to queue, claim approved jobs, enforce scope, run sequential phases');
+console.log('[redblueai-worker] starting placeholder worker');
+console.log('[redblueai-worker] configuration', config);
+console.log('[redblueai-worker] next step: connect to queue, claim approved jobs, enforce scope, run sequential phases');

@@ -1,7 +1,7 @@
 export async function GET() {
   return Response.json({
     status: 'ok',
-    service: 'purple-rain-web',
+    service: 'redblueai-web',
     timestamp: new Date().toISOString()
   });
 }

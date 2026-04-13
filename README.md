@@ -1,6 +1,6 @@
-# Purple Rain
+# RedBlueAI
 
-Purple Rain is the local product workspace for RedBlueAI, a consent-first AI cyber exercise SaaS for web apps and APIs.
+RedBlueAI is a consent-first AI cyber exercise SaaS for web apps and APIs.
 
 ## What is scaffolded
 
