@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
+import './worker.test.mjs';
+
 const repoFiles = [
   'README.md',
   'package.json',
@@ -10,8 +12,16 @@ const repoFiles = [
   'lib/config/site.ts',
   'worker/index.js',
   'app/api/health/route.ts',
+  'app/(app)/workers/page.tsx',
+  'worker/mock-control-plane.js',
+  'app/(app)/launch/page.tsx',
+  'app/(app)/runs/page.tsx',
+  'app/(app)/runs/[runId]/page.tsx',
+  'app/(app)/consent/page.tsx',
   'docs/mvp-delivery-plan.md',
-  'prisma/schema.prisma'
+  'prisma/schema.prisma',
+  'lib/consent/mock.ts',
+  'lib/exercises/mock.ts'
 ];
 
 async function readText(relativePath) {

@@ -1,28 +1,21 @@
-import { workerNodes } from '@/lib/data/control-plane';
+import { WorkerFleetOverview } from '@/components/workers/worker-fleet-overview';
+import { WorkerJobLane } from '@/components/workers/worker-job-lane';
+import { heartbeatEvents, queueAssignments, workerFleet } from '@/lib/workers/mock';
 
 export default function WorkersPage() {
   return (
-    <div className="grid">
+    <div className="grid" style={{ gap: 24 }}>
       <header className="page-header">
         <span className="badge">Worker fleet</span>
-        <h1>Monitor distributed workers from the central control plane.</h1>
+        <h1>Track heartbeats, queue claims, and artifacts across distributed workers.</h1>
         <p>
-          This page supports issue #7 by making multi-host worker capacity, model allocation, and current job
-          assignment visible to the operator.
+          The control plane keeps durable state centralized while worker hosts claim approved runs, enforce guardrails,
+          and stream progress back through heartbeats and artifact updates.
         </p>
       </header>
 
-      <section className="grid three">
-        {workerNodes.map((worker) => (
-          <article key={worker.hostLabel} className="card metric">
-            <span className="kicker">{worker.hostLabel}</span>
-            <h2>{worker.status}</h2>
-            <p>{worker.capacity}</p>
-            <p>Current job: {worker.currentJob}</p>
-            <p>Model: {worker.model}</p>
-          </article>
-        ))}
-      </section>
+      <WorkerFleetOverview workers={workerFleet} heartbeats={heartbeatEvents} />
+      <WorkerJobLane assignments={queueAssignments} />
     </div>
   );
 }

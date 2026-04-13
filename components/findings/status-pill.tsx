@@ -1,8 +1,9 @@
 import type { FindingSeverity, RunPhaseStatus, RunStatus } from '@/lib/findings/mock';
+import type { WorkerStatus } from '@/lib/workers/types';
 
 type FindingStatus = 'open' | 'fixed' | 'accepted';
 
-type PillTone = FindingSeverity | FindingStatus | RunPhaseStatus | RunStatus | 'neutral';
+type PillTone = FindingSeverity | FindingStatus | RunPhaseStatus | RunStatus | WorkerStatus | 'healthy' | 'busy' | 'degraded' | 'idle' | 'neutral';
 
 const toneStyles: Record<PillTone, { background: string; color: string; border: string }> = {
   Critical: { background: '#fdecec', color: '#9a1f1f', border: '#f2c3c3' },
@@ -27,6 +28,7 @@ const toneStyles: Record<PillTone, { background: string; color: string; border: 
   healthy: { background: '#eef7ee', color: '#1d7f5f', border: '#cde3d4' },
   busy: { background: '#eef3fb', color: '#35558f', border: '#cad7eb' },
   degraded: { background: '#fff1e8', color: '#9b4c12', border: '#f3d0b8' },
+  idle: { background: '#f6f8fc', color: '#4d5d7d', border: '#d8e0ec' },
   neutral: { background: '#f6f8fc', color: '#4d5d7d', border: '#d8e0ec' }
 };
 
