@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ExerciseStatus {
+  pending_manual_start
+  approved
+  queued
+  assigned
+  running
+  reporting
+  completed
+  failed
+  blocked
+}
+
+model User {
+  id          String      @id @default(cuid())
+  email       String      @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  workspaces  Workspace[]
+  consents    Consent[]
+  exercises   Exercise[]  @relation("ExerciseCreatedBy")
+}
+
+model Workspace {
+  id          String      @id @default(cuid())
+  name        String
+  ownerId     String
+  owner       User        @relation(fields: [ownerId], references: [id])
+  apps        App[]
+  createdAt   DateTime    @default(now())
+}
+
+model App {
+  id              String      @id @default(cuid())
+  workspaceId     String
+  workspace       Workspace   @relation(fields: [workspaceId], references: [id])
+  name            String
+  baseUrl         String
+  loginUrl        String?
+  environment     String
+  scopeSnapshot   Json?
+  guardrails      Json?
+  createdAt       DateTime    @default(now())
+  exercises       Exercise[]
+}
+
+model Consent {
+  id                  String    @id @default(cuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id])
+  version             String
+  signerName          String
+  signerRole          String?
+  authorizedStatement String
+  rulesAcknowledged   String
+  acceptedAt          DateTime  @default(now())
+  snapshot            Json
+  exercises           Exercise[]
+}
+
+model Exercise {
+  id                    String          @id @default(cuid())
+  appId                 String
+  app                   App             @relation(fields: [appId], references: [id])
+  createdByUserId       String
+  createdBy             User            @relation("ExerciseCreatedBy", fields: [createdByUserId], references: [id])
+  consentId             String
+  consent               Consent         @relation(fields: [consentId], references: [id])
+  status                ExerciseStatus  @default(pending_manual_start)
+  type                  String
+  scopeSnapshot         Json
+  guardrailsSnapshot    Json
+  consentSnapshot       Json
+  manualTriggerRequired Boolean         @default(true)
+  requestedAt           DateTime        @default(now())
+  approvedAt            DateTime?
+  assignedWorkerId      String?
+  reportPath            String?
+}
+
+model Worker {
+  id               String   @id @default(cuid())
+  hostLabel        String
+  status           String
+  sharedTokenHash  String
+  lastHeartbeatAt  DateTime?
+  currentJobId     String?
+  createdAt        DateTime @default(now())
+}
