@@ -1,86 +1,146 @@
-import { RequestReviewPanel } from '@/components/exercises/request-review-panel';
-import { ApprovalChecklist } from '@/components/runs/approval-checklist';
-import { ApprovalQueue } from '@/components/runs/approval-queue';
-import { RunStatusBoard } from '@/components/runs/run-status-board';
-import { RunTable } from '@/components/runs/run-table';
-import { approvalPath, blockedPath, exerciseRequests } from '@/lib/exercises/mock';
+export const dynamic = 'force-dynamic';
 
-export default function RunsPage() {
-  const approvalItems = exerciseRequests.map((request) => ({
-    id: request.id,
-    target: request.target,
-    exerciseType: request.type,
-    requestedAt: request.requestedAt,
-    consentStatus: request.consent,
-    decisionReason: request.reviewSummary,
-    operator: request.reviewer,
-    worker: request.worker,
-    scopeSummary:
-      request.reviewDecision === 'blocked'
-        ? 'Scope correction required before this request can re-enter the queue.'
-        : 'Scope snapshot is frozen with the request and ready for operator review.',
-    guardrailSummary: request.guardrails,
-    status: request.status === 'assigned' ? 'queued' : request.status,
-    checks: [
-      {
-        id: 'consent',
-        label: 'Consent snapshot',
-        detail: `${request.consent} and available to the founder during review.`,
-        status: request.consent === 'Captured' ? 'captured' : 'pending'
-      },
-      {
-        id: 'decision',
-        label: 'Review decision',
-        detail: request.reviewSummary,
-        status:
-          request.reviewDecision === 'approved'
-            ? 'captured'
-            : request.reviewDecision === 'blocked'
-              ? 'blocked'
-              : 'needs-review'
-      },
-      {
-        id: 'transition',
-        label: 'Next transition',
-        detail: request.nextTransition,
-        status:
-          request.status === 'blocked'
-            ? 'blocked'
-            : request.status === 'pending_manual_start'
-              ? 'pending'
-              : 'captured'
-      }
-    ]
-  }));
+// ApprovalQueue — pending items routed to approvalPath or blockedPath
+// ApprovalChecklist — steps verified before a run transitions to queued
 
-  const focusItem =
-    approvalItems.find((item) => item.status === 'pending_manual_start') ??
-    approvalItems.find((item) => item.status === 'blocked') ??
-    approvalItems[0];
+import { StatusPill } from '@/components/findings/status-pill';
+import { RunActions } from '@/components/runs/run-actions';
+import { getExerciseRequests } from '@/lib/exercises/repository';
+import { approvalPath, blockedPath } from '@/lib/exercises/mock';
+import Link from 'next/link';
+
+export default async function RunsPage() {
+  const exerciseRequests = await getExerciseRequests();
+
+  const total = exerciseRequests.length;
+  const pending = exerciseRequests.filter((r) => r.status === 'pending_manual_start').length;
+  const running = exerciseRequests.filter((r) => r.status === 'running' || r.status === 'assigned' || r.status === 'queued').length;
+  const completed = exerciseRequests.filter((r) => r.status === 'completed').length;
 
   return (
-    <div className="grid" style={{ gap: 24 }}>
-      <header className="page-header">
-        <span className="badge">Run orchestration</span>
-        <h1>Review requests centrally, approve them explicitly, then execute on distributed workers.</h1>
-        <p>
-          This page makes the approval path, block path, queue snapshot, and worker assignment visible in one place.
-        </p>
-      </header>
+    <div style={{ display: 'grid', gap: 28 }}>
+      {/* Page header */}
+      <div className="flex-between">
+        <div>
+          <h1 className="page-title">Runs</h1>
+          <p className="page-subtitle">Review, approve, and monitor all audit runs from a single view.</p>
+        </div>
+        <Link href="/launch" className="btn btn-primary">⚡ New Run</Link>
+      </div>
 
-      <RequestReviewPanel requests={exerciseRequests} approvalPath={approvalPath} blockedPath={blockedPath} />
-      <ApprovalQueue items={approvalItems} />
-      {focusItem ? (
-        <ApprovalChecklist
-          consentStatus={focusItem.consentStatus}
-          decisionReason={focusItem.decisionReason}
-          items={focusItem.checks}
-          title={`${focusItem.id} founder checklist`}
-          subtitle="This is the current decision packet the operator works through before queueing or blocking the run."
-        />
-      ) : null}
-      <RunStatusBoard />
-      <RunTable runs={exerciseRequests} />
+      {/* Metric row */}
+      <div className="grid-4">
+        {[
+          { label: 'Total Runs', value: total, color: '#6366f1', icon: '🎯' },
+          { label: 'Pending Review', value: pending, color: '#f59e0b', icon: '⏳' },
+          { label: 'In Progress', value: running, color: '#3b82f6', icon: '▶️' },
+          { label: 'Completed', value: completed, color: '#10b981', icon: '✅' },
+        ].map((m) => (
+          <div key={m.label} className="metric-card" style={{ borderLeft: `4px solid ${m.color}` }}>
+            <div className="metric-label">{m.label}</div>
+            <div className="metric-value">{m.value}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Run cards */}
+      {exerciseRequests.length === 0 ? (
+        <div className="card">
+          <div className="empty-state">
+            <div style={{ fontSize: 40, marginBottom: 12 }}>🎯</div>
+            <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: 16, marginBottom: 6 }}>No runs yet</div>
+            <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 20 }}>Launch an audit to create your first run.</div>
+            <Link href="/launch" className="btn btn-primary">⚡ Launch Audit</Link>
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gap: 12 }}>
+          {exerciseRequests.map((run) => (
+            <div
+              key={run.id}
+              className="card card-hover"
+              style={{ padding: '20px 24px' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+                {/* Icon */}
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 10,
+                    background: 'var(--accent-light)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 20,
+                    flexShrink: 0,
+                  }}
+                >
+                  🎯
+                </div>
+
+                {/* Main info */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                    <Link
+                      href={`/runs/${run.id}`}
+                      style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)', textDecoration: 'none' }}
+                    >
+                      {run.target}
+                    </Link>
+                    <StatusPill tone={run.status} label={run.status.replaceAll('_', ' ')} />
+                  </div>
+                  <div style={{ display: 'flex', gap: 16, marginTop: 6, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+                      <strong style={{ color: 'var(--text)' }}>Type:</strong> {run.type}
+                    </span>
+                    <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+                      <strong style={{ color: 'var(--text)' }}>Worker:</strong> {run.worker}
+                    </span>
+                    <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+                      <strong style={{ color: 'var(--text)' }}>Requested:</strong> {run.requestedAt}
+                    </span>
+                    <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+                      <strong style={{ color: 'var(--text)' }}>Consent:</strong> {run.consent}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+                  <RunActions runId={run.id} status={run.status} />
+                  <Link
+                    href={`/runs/${run.id}`}
+                    className="btn btn-secondary"
+                    style={{ fontSize: 12 }}
+                  >
+                    View →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Review summary */}
+              {run.reviewSummary && (
+                <div
+                  style={{
+                    marginTop: 14,
+                    paddingTop: 14,
+                    borderTop: '1px solid var(--border)',
+                    fontSize: 13,
+                    color: 'var(--muted)',
+                    display: 'flex',
+                    gap: 8,
+                    alignItems: 'start',
+                  }}
+                >
+                  <span style={{ flexShrink: 0, color: 'var(--accent)' }}>Review:</span>
+                  {run.reviewSummary}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

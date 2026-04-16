@@ -1,9 +1,12 @@
+export const dynamic = 'force-dynamic';
+
 import { ReportArtifacts } from '@/components/reports/report-artifacts';
 import { FindingList } from '@/components/reports/finding-list';
 import { ReportHighlights } from '@/components/reports/report-highlights';
-import { reportHighlights, reportRuns } from '@/lib/reports/mock';
+import { getReportRuns, reportHighlights } from '@/lib/reports/repository';
 
-export default function ReportsPage() {
+export default async function ReportsPage() {
+  const reportRuns = await getReportRuns();
   const latestRun = reportRuns[0];
 
   return (

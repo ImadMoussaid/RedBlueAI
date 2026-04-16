@@ -1,4 +1,5 @@
 import { AuthJourney } from '@/components/auth/auth-journey';
+import { SignInForm } from '@/components/auth/sign-in-form';
 import { authActions, signInHighlights, signInJourney } from '@/lib/auth/mock';
 
 export default function SignInPage() {
@@ -8,22 +9,9 @@ export default function SignInPage() {
         <header className="page-header" style={{ marginBottom: 18 }}>
           <span className="badge">Authentication</span>
           <h1>Sign in to your RedBlueAI workspace.</h1>
-          <p>Issue #3 will replace this starter screen with a real email/password authentication flow.</p>
+          <p>Enter your founder credentials to access the control plane.</p>
         </header>
-        <div className="form-grid">
-          <label>
-            Email
-            <input type="email" placeholder="founder@redblueai.com" />
-          </label>
-          <label>
-            Password
-            <input type="password" placeholder="••••••••" />
-          </label>
-        </div>
-        <div className="button-row" style={{ marginTop: 18 }}>
-          <a href="/workspace" className="button primary">Continue to workspace</a>
-          <a href="/register" className="button secondary">Create workspace</a>
-        </div>
+        <SignInForm />
       </section>
 
       <AuthJourney

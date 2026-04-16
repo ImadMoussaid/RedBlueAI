@@ -1,14 +1,14 @@
+export const dynamic = 'force-dynamic';
+
 import { WorkspaceOverview } from '@/components/workspace/workspace-overview';
+import { getWorkspaceData } from '@/lib/workspace/repository';
 import {
   workspaceActivity,
-  workspaceHeader,
-  workspaceMembers,
-  workspaceMetrics,
-  workspacePolicies,
-  workspaceTargets
+  workspacePolicies
 } from '@/lib/workspace/mock';
 
-export default function WorkspacePage() {
+export default async function WorkspacePage() {
+  const { header: workspaceHeader, targets: workspaceTargets, members: workspaceMembers, metrics: workspaceMetrics } = await getWorkspaceData();
   return (
     <div className="grid">
       <header className="page-header">

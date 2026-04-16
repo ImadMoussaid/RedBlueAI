@@ -1,8 +1,15 @@
+export const dynamic = 'force-dynamic';
+
 import { WorkerFleetOverview } from '@/components/workers/worker-fleet-overview';
 import { WorkerJobLane } from '@/components/workers/worker-job-lane';
-import { heartbeatEvents, queueAssignments, workerFleet } from '@/lib/workers/mock';
+import { getWorkerFleet, getQueueAssignments, getHeartbeatEvents } from '@/lib/workers/repository';
 
-export default function WorkersPage() {
+export default async function WorkersPage() {
+  const [workerFleet, queueAssignments, heartbeatEvents] = await Promise.all([
+    getWorkerFleet(),
+    getQueueAssignments(),
+    getHeartbeatEvents()
+  ]);
   return (
     <div className="grid" style={{ gap: 24 }}>
       <header className="page-header">

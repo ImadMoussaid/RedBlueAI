@@ -1,7 +1,10 @@
-import { AppTargetCard } from '@/components/apps/app-target-card';
-import { appTargets } from '@/lib/apps/mock';
+export const dynamic = 'force-dynamic';
 
-export default function AppsPage() {
+import { AppTargetCard } from '@/components/apps/app-target-card';
+import { getAppTargets } from '@/lib/apps/repository';
+
+export default async function AppsPage() {
+  const appTargets = await getAppTargets();
   return (
     <div className="grid">
       <header className="page-header">

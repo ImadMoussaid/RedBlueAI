@@ -1,9 +1,18 @@
+export const dynamic = 'force-dynamic';
+
 import { ConsentAuditTrail } from '@/components/consent/consent-audit-trail';
 import { ConsentSummary } from '@/components/consent/consent-summary';
 import { ConsentVersionPanel } from '@/components/consent/consent-version-panel';
-import { consentAuditSummary, consentSnapshot } from '@/lib/consent/mock';
+import { CreateConsentForm } from '@/components/consent/create-consent-form';
+import { getLatestConsent } from '@/lib/consent/repository';
+import { consentSnapshot as mockSnapshot, consentAuditSummary as mockAuditSummary } from '@/lib/consent/mock';
 
-export default function ConsentPage() {
+export default async function ConsentPage() {
+  const fetched = await getLatestConsent();
+  const consentSnapshot = fetched ?? mockSnapshot;
+  const consentAuditSummary = fetched
+    ? { capturedAt: fetched.acceptedAt, version: fetched.currentVersion.version, signer: fetched.signer.fullName, organization: fetched.signer.organization, linkedRuns: fetched.linkedRuns.length, affirmationsChecked: fetched.affirmations.filter(a => a.checked).length }
+    : mockAuditSummary;
   return (
     <div className="grid" style={{ gap: 24 }}>
       <header className="page-header">
@@ -50,36 +59,7 @@ export default function ConsentPage() {
       <ConsentAuditTrail events={consentSnapshot.auditTrail} />
 
       <section className="card" style={{ padding: 24 }}>
-        <div className="form-grid">
-          <label>
-            Authorized signer
-            <input defaultValue={consentSnapshot.signer.fullName} placeholder="Jane Doe, Head of Engineering" />
-          </label>
-          <label>
-            Signer role
-            <input defaultValue={consentSnapshot.signer.role} placeholder="Head of Engineering" />
-          </label>
-          <label>
-            Organization
-            <input defaultValue={consentSnapshot.signer.organization} placeholder="Acme Security" />
-          </label>
-          <label>
-            Signer email
-            <input defaultValue={consentSnapshot.signer.email} placeholder="jane.doe@acme.example" />
-          </label>
-          <label>
-            Authorization statement
-            <textarea defaultValue={'I confirm that my organization owns the target assets or is explicitly authorized to have them tested by RedBlueAI under the stated rules of engagement.'} />
-          </label>
-          <label>
-            Rules of engagement acknowledgement
-            <textarea defaultValue={'Read-only exercise. No destructive payloads. In-scope assets only. Test accounts only where applicable.'} />
-          </label>
-        </div>
-        <div className="button-row" style={{ marginTop: 18 }}>
-          <a href="/runs" className="button primary">Save consent snapshot</a>
-          <a href="/apps/new" className="button secondary">Back to app setup</a>
-        </div>
+        <CreateConsentForm />
       </section>
     </div>
   );

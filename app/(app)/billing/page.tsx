@@ -1,8 +1,11 @@
+export const dynamic = 'force-dynamic';
+
 import { StatusPill } from '@/components/findings/status-pill';
 import { BillingOverview } from '@/components/billing/billing-overview';
-import { billingSummary } from '@/lib/billing/mock';
+import { getBillingSummary } from '@/lib/billing/repository';
 
-export default function BillingPage() {
+export default async function BillingPage() {
+  const billingSummary = await getBillingSummary();
   return (
     <div className="grid" style={{ gap: 24 }}>
       <header className="page-header">

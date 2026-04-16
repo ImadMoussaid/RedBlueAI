@@ -29,7 +29,6 @@ The local MVP now includes:
 ## Local Development
 
 ```bash
-cd /Users/imadmoussaid/Documents/Apps/PurpleRain
 npm install
 npm test
 npm run build
