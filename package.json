@@ -8,15 +8,28 @@
     "start": "next start",
     "lint": "next lint",
     "test": "node --test tests/scaffold.test.mjs",
-    "worker": "node worker/index.js"
+    "worker": "node --env-file=.env.local worker/index.js",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.7.0",
+    "@prisma/config": "^7.7.0",
+    "bcryptjs": "^3.0.3",
+    "ioredis": "^5.10.1",
     "next": "^15.5.15",
+    "next-auth": "^4.24.14",
+    "pg": "^8.20.0",
+    "prisma": "^7.7.0",
     "react": "19.0.0",
     "react-dom": "19.0.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "22.15.3",
+    "@types/pg": "^8.20.0",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
     "typescript": "5.8.3"

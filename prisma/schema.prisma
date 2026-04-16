@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum ExerciseStatus {
@@ -12,6 +11,7 @@ enum ExerciseStatus {
   approved
   queued
   assigned
+  waiting_for_trigger
   running
   reporting
   completed
@@ -84,11 +84,13 @@ model Exercise {
   approvedAt            DateTime?
   assignedWorkerId      String?
   reportPath            String?
+  findings              Json?
+  executiveSummary      String?
 }
 
 model Worker {
   id               String   @id @default(cuid())
-  hostLabel        String
+  hostLabel        String   @unique
   status           String
   sharedTokenHash  String
   lastHeartbeatAt  DateTime?
