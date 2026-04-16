@@ -1,6 +1,6 @@
 export type WorkerStatus = 'healthy' | 'busy' | 'degraded' | 'idle';
 
-export type WorkerAssignmentStatus = 'queued' | 'assigned' | 'running' | 'reporting' | 'completed' | 'blocked';
+export type WorkerAssignmentStatus = 'queued' | 'assigned' | 'waiting_for_trigger' | 'running' | 'reporting' | 'completed' | 'blocked';
 
 export interface WorkerFleetNode {
   id: string;

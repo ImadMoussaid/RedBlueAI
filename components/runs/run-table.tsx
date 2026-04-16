@@ -1,4 +1,5 @@
 import { StatusPill } from '@/components/findings/status-pill';
+import { RunActions } from '@/components/runs/run-actions';
 import type { ExerciseRequestReview } from '@/lib/exercises/types';
 
 export function RunTable({ runs }: { runs: ExerciseRequestReview[] }) {
@@ -9,7 +10,7 @@ export function RunTable({ runs }: { runs: ExerciseRequestReview[] }) {
           <div className="kicker">Queue snapshot</div>
           <h2 style={{ marginTop: 8 }}>Request review, approval, and remediation status</h2>
         </div>
-        <a className="button secondary" href="/runs/run-acme-001">Open a run</a>
+        <span />
       </div>
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1120 }}>
@@ -21,6 +22,7 @@ export function RunTable({ runs }: { runs: ExerciseRequestReview[] }) {
               <th style={{ padding: '12px 10px' }}>Review</th>
               <th style={{ padding: '12px 10px' }}>Next transition</th>
               <th style={{ padding: '12px 10px' }}>Worker</th>
+              <th style={{ padding: '12px 10px' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -28,7 +30,7 @@ export function RunTable({ runs }: { runs: ExerciseRequestReview[] }) {
               <tr key={run.id} style={{ borderTop: '1px solid var(--line)' }}>
                 <td style={{ padding: '14px 10px' }}>
                   <div style={{ display: 'grid', gap: 4 }}>
-                    <strong>{run.target}</strong>
+                    <a href={`/runs/${run.id}`} style={{ fontWeight: 600, textDecoration: 'none', color: 'inherit' }}>{run.target}</a>
                     <span style={{ color: 'var(--muted)', fontSize: 13 }}>{run.requestedAt}</span>
                     <span style={{ color: 'var(--muted)', fontSize: 13 }}>Consent: {run.consent}</span>
                   </div>
@@ -43,6 +45,9 @@ export function RunTable({ runs }: { runs: ExerciseRequestReview[] }) {
                 </td>
                 <td style={{ padding: '14px 10px' }}>{run.nextTransition}</td>
                 <td style={{ padding: '14px 10px', color: 'var(--muted)' }}>{run.worker}</td>
+                <td style={{ padding: '14px 10px' }}>
+                  <RunActions runId={run.id} status={run.status} />
+                </td>
               </tr>
             ))}
           </tbody>

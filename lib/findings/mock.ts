@@ -3,6 +3,7 @@ export type RunStatus =
   | 'approved'
   | 'queued'
   | 'assigned'
+  | 'waiting_for_trigger'
   | 'running'
   | 'reporting'
   | 'completed'
@@ -132,14 +133,14 @@ export const runs: RunSummary[] = [
   {
     id: 'run-fabrikam-008',
     target: 'Fabrikam checkout',
-    type: 'Quick web exercise',
-    status: 'reporting',
+    type: 'Authenticated web exercise',
+    status: 'waiting_for_trigger',
     consent: 'Captured',
-    guardrails: 'Allowed domains only, test accounts only',
-    requestedAt: 'Yesterday, 16:05',
-    worker: 'worker-eu-01',
-    actionableFixes: 5,
-    detectionsMissed: 3
+    guardrails: 'Test accounts only, rate limit enforced',
+    requestedAt: 'Today, 15:18',
+    worker: 'worker-us-02',
+    actionableFixes: 0,
+    detectionsMissed: 0
   }
 ];
 
@@ -341,28 +342,13 @@ export const runDetails: Record<
     ]
   },
   'run-fabrikam-008': {
-    summary: 'Blue team review complete. Purple summary and PDF report are being assembled.',
-    reportStatus: 'Reporting',
-    detectionsTriggered: 3,
-    detectionsMissed: 3,
-    topFixes: [
-      'Review detections missed during checkout flow.',
-      'Document the reproduction steps for session handling.',
-      'Share a prioritized remediation plan with the operator.'
-    ],
-    findings,
-    remediationPlan: [
-      {
-        owner: 'Identity team',
-        action: 'Normalize login responses and timing behavior.',
-        window: 'Backlog'
-      },
-      {
-        owner: 'Application backend team',
-        action: 'Harden abuse-prevention coverage around recovery flows.',
-        window: 'Next sprint'
-      }
-    ]
+    summary: 'Worker has claimed the run and is holding. Press Start Audit to begin execution.',
+    reportStatus: 'Waiting for trigger',
+    detectionsTriggered: 0,
+    detectionsMissed: 0,
+    topFixes: [],
+    findings: [],
+    remediationPlan: []
   }
 };
 

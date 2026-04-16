@@ -23,6 +23,11 @@ export const approvalPath: ExerciseLifecycleStage[] = [
     note: 'A worker host claims the run and prepares the exercise plan.'
   },
   {
+    title: 'Waiting for trigger',
+    tone: 'waiting_for_trigger',
+    note: 'Worker is ready. The founder must press Start Audit before execution begins.'
+  },
+  {
     title: 'Running',
     tone: 'running',
     note: 'Safe checks, recon, and purple-team phases execute in order.'
@@ -102,15 +107,15 @@ export const exerciseRequests: ExerciseRequestReview[] = [
     id: 'RB-004',
     target: 'Fabrikam checkout',
     type: 'Authenticated web exercise',
-    status: 'assigned',
+    status: 'waiting_for_trigger',
     requestedAt: '2026-04-13 15:18 CET',
     consent: 'Captured',
     guardrails: 'Test accounts only, rate limit enforced',
     reviewer: 'Approved and assigned',
     reviewDecision: 'approved',
-    reviewTone: 'assigned',
-    reviewSummary: 'Review complete and worker claim accepted.',
-    nextTransition: 'Begin recon and red-team checks.',
+    reviewTone: 'waiting_for_trigger',
+    reviewSummary: 'Worker claimed the run and is holding. Press Start Audit to begin execution.',
+    nextTransition: 'Founder presses Start Audit to release the worker.',
     worker: 'worker-us-02'
   }
 ];
@@ -203,32 +208,39 @@ export const exerciseRunDetails: Record<string, ExerciseRunDetail> = {
     nextSteps: ['Finish the purple summary.', 'Assemble the PDF report.', 'Surface the top remediation items.']
   },
   'run-fabrikam-008': {
-    summary: 'Blue team review complete. Purple summary and PDF report are being assembled.',
-    reportStatus: 'Reporting',
+    summary: 'Worker has claimed the run and is holding. Press Start Audit to begin execution.',
+    reportStatus: 'Waiting for trigger',
     approvalTrail: [
       {
         title: 'Request submitted',
         tone: 'pending_manual_start',
         actor: 'Customer workspace',
-        at: '2026-04-12 15:02 CET',
+        at: '2026-04-13 15:18 CET',
         note: 'The authenticated web exercise was frozen and reviewed.'
       },
       {
-        title: 'Approved',
+        title: 'Approved and queued',
         tone: 'approved',
         actor: 'Founder',
-        at: '2026-04-12 15:08 CET',
-        note: 'The operator approved the run after validating the guardrails.'
+        at: '2026-04-13 15:22 CET',
+        note: 'The operator approved the run after validating consent and guardrails.'
       },
       {
-        title: 'Reporting',
-        tone: 'reporting',
-        actor: 'worker-eu-01',
-        at: '2026-04-12 16:05 CET',
-        note: 'Findings and report assets are being finalized.'
+        title: 'Worker assigned',
+        tone: 'assigned',
+        actor: 'worker-us-02',
+        at: '2026-04-13 15:24 CET',
+        note: 'worker-us-02 claimed the run from the central queue.'
+      },
+      {
+        title: 'Waiting for trigger',
+        tone: 'waiting_for_trigger',
+        actor: 'worker-us-02',
+        at: '2026-04-13 15:24 CET',
+        note: 'Worker is holding. Execution will not begin until the founder presses Start Audit.'
       }
     ],
     blockedReasons: [],
-    nextSteps: ['Review the report cover page.', 'Send the actionable fixes to the customer.', 'Close the run as completed.']
+    nextSteps: ['Press Start Audit to release the worker and begin execution.', 'Monitor phase progress in the worker fleet view.', 'Review findings once the run reaches the reporting stage.']
   }
 };

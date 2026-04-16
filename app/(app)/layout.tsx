@@ -2,9 +2,9 @@ import { Sidebar } from '@/components/layout/sidebar';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="shell split-shell">
+    <div className="shell">
       <Sidebar />
-      <div>{children}</div>
-    </main>
+      <div className="main">{children}</div>
+    </div>
   );
 }

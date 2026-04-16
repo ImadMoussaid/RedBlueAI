@@ -1,4 +1,4 @@
-import type { RunStatus } from '@/lib/findings/mock';
+import type { RunStatus, Finding } from '@/lib/findings/mock';
 
 export type ExerciseReviewDecision = 'approved' | 'blocked' | 'needs_changes';
 
@@ -38,4 +38,6 @@ export interface ExerciseRunDetail {
   approvalTrail: ExerciseApprovalTrailItem[];
   blockedReasons: string[];
   nextSteps: string[];
+  findings?: Finding[];
+  executiveSummary?: string;
 }

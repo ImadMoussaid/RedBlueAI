@@ -12,7 +12,7 @@ export type ApprovalQueueItem = {
   worker: string;
   scopeSummary: string;
   guardrailSummary: string;
-  status: 'pending_manual_start' | 'approved' | 'queued' | 'blocked';
+  status: 'pending_manual_start' | 'approved' | 'queued' | 'waiting_for_trigger' | 'blocked';
   checks: ApprovalChecklistItem[];
 };
 
@@ -22,10 +22,11 @@ export type ApprovalQueueProps = {
   subtitle?: string;
 };
 
-const statusTone: Record<ApprovalQueueItem['status'], 'pending_manual_start' | 'approved' | 'queued' | 'blocked'> = {
+const statusTone: Record<ApprovalQueueItem['status'], 'pending_manual_start' | 'approved' | 'queued' | 'waiting_for_trigger' | 'blocked'> = {
   pending_manual_start: 'pending_manual_start',
   approved: 'approved',
   queued: 'queued',
+  waiting_for_trigger: 'waiting_for_trigger',
   blocked: 'blocked'
 };
 
