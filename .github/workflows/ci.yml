@@ -10,7 +10,7 @@ on:
 jobs:
   regression:
     name: Regression Tests
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Check out repository
@@ -30,7 +30,7 @@ jobs:
 
   build:
     name: Application Build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: regression
 
     steps:
@@ -51,7 +51,7 @@ jobs:
 
   docker-build:
     name: Docker Build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build
 
     steps:
