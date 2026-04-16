@@ -36,9 +36,9 @@ function findNextJob(workerLabel) {
 function claimJob(job, workerLabel) {
   return {
     ...job,
-    status: 'assigned',
+    status: 'waiting_for_trigger',
     worker: workerLabel,
-    claimedAt: '2026-04-13 16:10 CET'
+    claimedAt: new Date().toISOString()
   };
 }
 
